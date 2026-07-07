@@ -1,0 +1,83 @@
+CREATE OR REPLACE VIEW V_PBI_FATURAMENTO_VEICULOS
+AS
+SELECT
+        (TO_CHAR(FMV.EMPRESA) || ' - ' || TO_CHAR(FMV.VEICULO))                                  AS CHAVE_VEICULO        ,
+        (TO_CHAR(FMC.EMPRESA) || ' - ' || TO_CHAR(FMC.REVENDA))                                  AS CHAVE_EMP_REV        ,
+        (TO_CHAR(FMC.EMPRESA) || ' - ' || TO_CHAR(FMC.REVENDA) || ' - ' || TO_CHAR(FMC.CONTATO)) AS CHAVE_EMP_REV_CONTATO,
+        FMC.EMPRESA                                                                                                      ,
+        FMC.REVENDA                                                                                                      ,
+        T2.NOME_EMPRESA                                                                                                  ,
+        CAST(FMC.DTA_ENTRADA_SAIDA AS DATE)                                                      AS DTA_ENTRADA_SAIDA    ,
+        CAST(FMC.DTA_DOCUMENTO AS DATE)                                                          AS DTA_DOCUMENTO        ,
+        -- ? DATA DO CONTATO VINDO DA CAC_CONTATO
+        CAST(CC.DTA_CONTATO AS DATE)                                                             AS DTA_CONTATO          ,
+        FMC.MODALIDADE                                                                                                   ,
+        FMC.TIPO_TRANSACAO                                                                                               ,
+        FMC.FATOPERACAO                                                                                                  ,
+        FMC.OPERACAO                                                                                                     ,
+        FMC.CAIXA                                                                                                        ,
+        FMC.CLIENTE                                                                                                      ,
+        FMC.CLIENTE_FATURAMENTO                                                                                          ,
+        FMC.DEPARTAMENTO                                                                         AS DEPARTAMENTO_FAT     ,
+        FMC.USUARIO                                                                                                      ,
+        VEND.CHAVE_EMP_REV_VENDEDOR                                                                                      ,
+        VEND.CHAVE_EMP_REV_USUARIO                                                                                       ,
+        FMC.CONTATO                                                                                                      ,
+        FMC.TOT_MERCADORIA                                                                                               ,
+        FMC.TOT_CUSTO_MEDIO                                                                                              ,
+        FMC.TOT_QUANTIDADES                                                                                              ,
+        FMV.VEICULO                                                                              AS VEICULO_FATURAMENTO  ,
+        FMV.VAL_TOTAL                                                                                                    ,
+        FMV.VAL_CUSTO                                                                                                    ,
+        FMV.VAL_OPCIONAIS                                                                                                ,
+        FMV.VAL_DESCONTO                                                                                                 ,
+        FMV.VAL_FRETE                                                                                                    ,
+        FMV.VAL_DEVERIA
+FROM
+        CNP.FAT_MOVIMENTO_CAPA FMC
+INNER JOIN
+        CNP.FAT_MOVIMENTO_VEICULO FMV
+ON
+        FMV.EMPRESA            = FMC.EMPRESA
+AND     FMV.REVENDA            = FMC.REVENDA
+AND     FMV.NUMERO_NOTA_FISCAL = FMC.NUMERO_NOTA_FISCAL
+AND     FMV.SERIE_NOTA_FISCAL  = FMC.SERIE_NOTA_FISCAL
+AND     FMV.TIPO_TRANSACAO     = FMC.TIPO_TRANSACAO
+AND     FMV.CONTADOR           = FMC.CONTADOR
+INNER JOIN
+        CNP.VEI_VEICULO VEI
+ON
+        VEI.EMPRESA = FMV.EMPRESA
+AND     VEI.VEICULO = FMV.VEICULO
+INNER JOIN
+        CNP.GER_USUARIO USU
+ON
+        USU.USUARIO = FMC.USUARIO
+INNER JOIN
+        CNP.FAT_TIPO_TRANSACAO FTT
+ON
+        FTT.TIPO_TRANSACAO = FMC.TIPO_TRANSACAO
+INNER JOIN
+        V_PBI_REVENDAS T2
+ON
+        FMC.EMPRESA = T2.EMPRESA
+AND     FMC.REVENDA = T2.REVENDA
+INNER JOIN
+        V_PBI_VENDEDORES VEND
+ON
+        VEND.USUARIO = USU.USUARIO
+        -- ? JOIN COM A CAC_CONTATO PARA BUSCAR A DATA DO CONTATO
+LEFT JOIN
+        CNP.CAC_CONTATO CC
+ON
+        CC.EMPRESA = FMC.EMPRESA
+AND     CC.REVENDA = FMC.REVENDA
+AND     CC.CONTATO = FMC.CONTATO
+WHERE
+        FMC.TIPO_TRANSACAO IN ('V21',
+                               'V07',
+                               'U21',
+                               'U07')
+        -- FILTRO DINÂMICO DOS ÚLTIMOS 5 ANOS
+AND     FMC.DTA_ENTRADA_SAIDA >= ADD_MONTHS(TRUNC(SYSDATE), -60)
+AND     FMC.STATUS            = 'F';

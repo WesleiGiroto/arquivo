@@ -1,0 +1,124 @@
+Barra Progresso = 
+
+/* --------------------------------------------------------------------------
+DESENVOLVIDO POR JEFFERSON ALVES || DADOS CRIATIVOS 
+
+Caso queira aprender do ZERO a criar este código e muito outros do Absoluto zero, te convido a fazer parte do meu treinamento fechado, Lá ofereço uma instrução detalhada, guiando você em cada etapa do processo. 
+
+Link para iniciar essa jornada de aprendizado:
+
+https://bit.ly/DashsCriativos
+
+
+--------------------------
+
+Redes Sociais (dê aquela moral galera)
+
+► Instagram: https://www.instagram.com/dadoscriativos_/
+
+► Linkedin: https://www.linkedin.com/in/jeffersonallvesneves/
+
+► YouTube: https://www.youtube.com/c/JeffersonAlvesDadosCriativos
+
+► Grupo Telegram: https://t.me/dadoscriativos
+
+-------------------------------------------------------------------------- */
+
+
+VAR vValor =            
+    0.5 
+
+VAR vValor_formatado =      
+    FORMAT( vValor, "0%" ) 
+
+VAR vMeta =            
+    1 
+
+--------------------------------
+-- FORMATAÇÕES   
+--------------------------------
+
+VAR vFonte = "Cambria "
+
+VAR vRotulo_categoria_texto = "Target: "
+VAR vRotulo_categoria_cor = "#3f3f3f"
+VAR vRotulo_categoria_tam = 12
+
+
+VAR vRotulo_dados_cor = "#3f3f3f"
+VAR vRotulo_dados_tam = 15
+VAR vRotulo_dados_peso = 600
+VAR vRotulo_dados_posicao = 40
+
+
+VAR vBarra_altura = 10
+
+VAR vBarra_progresso_cor = "orange"
+
+VAR vBarra_fundo_cor = "#6f6f6f"
+VAR vBarra_fundo_opacidade = 9
+
+VAR vLinha_meta_larg = 2
+VAR vLinha_meta_cor = "#3f3f3f"
+
+
+
+
+RETURN 
+
+"data:image/svg+xml;utf8,
+<svg width='200' height='70' viewBox='0 0 200 70' fill='none' xmlns='http://www.w3.org/2000/svg'>
+
+    <rect 
+        id='f001' 
+        x='0' 
+        y='37' 
+        width='190' 
+        height='" & vBarra_altura & "' 
+        fill='" & vBarra_fundo_cor & "'
+        opacity='0." & vBarra_fundo_opacidade & "' 
+    />
+
+    <rect 
+        id='f002' 
+        x='0' 
+        y='37' 
+        width='" & MIN( 190, MAX( 0, ROUND( 131 * vValor, 0 ) ) ) & "' 
+        height='" & vBarra_altura & "' 
+        fill='" & vBarra_progresso_cor & "' 
+    />
+
+    <text 
+        id='f003' 
+        fill='" & vRotulo_categoria_cor & "' 
+        font-family='" & vFonte & "' 
+        font-size='" & vRotulo_categoria_tam & "' 
+        font-weight='400'>
+        
+        <tspan x='0' y='28'>
+            " & vRotulo_categoria_texto & "
+        </tspan>
+    </text>
+
+    <text 
+        id='f004' 
+        fill='" & vRotulo_dados_cor & "' 
+        font-family='" & vFonte & "' 
+        font-size='" & vRotulo_dados_tam & "' 
+        font-weight='" & vRotulo_dados_peso & "'>
+        
+        <tspan x='" & vRotulo_dados_posicao & "' y='28'>
+            " & vValor_formatado & "
+        </tspan>
+    </text>
+
+    <rect 
+        id='f005' 
+        x='" & MIN( 190, MAX( 0, ROUND( 131 * vMeta, 0 ) ) ) & " ' 
+        y='32' 
+        width='" & vLinha_meta_larg & "' 
+        height='" & vBarra_altura + 10 & "' 
+        fill='" & vLinha_meta_cor & "' 
+    />
+
+</svg>"
